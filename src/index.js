@@ -8,10 +8,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const users = [];
+const users = [{
+  "id": "testID",
+  "name":"Fernando Santos",
+  "username": "nandao",
+  "todos": []
+}];
 
 function checksExistsUserAccount(request, response, next) {
   //checkExistsUserAccount
+  const { username } = request.headers
+
+  const user = users.find(user => user.username.toLowerCase() === username.toLowerCase())
+  
+  if (user == undefined) return response.status(404).send('Sorry, user not found! :(')
+
+  request.user = user
+  
+  return next()
 }
 
 app.post('/users', (request, response) => {
@@ -26,13 +40,15 @@ app.post('/users', (request, response) => {
   }
 
   users.push(newUser)
-  //console.log(users)
 
   response.send(newUser).status(200)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   // GET todos
+  const { user } = request
+  
+  response.send(user.todos).status(200)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
