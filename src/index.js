@@ -73,10 +73,33 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   // PUT todos
+  const {user} = request, // const user = request.user
+  {id} = request.params,
+  newTitle = request.body.title,
+  newDeadline = request.body.deadline
+  
+  const editedToDo = user.todos.find(toDo => toDo.id === id)
+
+  //if (editedToDo == undefined) return response.send('Sorry! To Do not found :(').status(404)
+  
+  editedToDo.title = newTitle
+  editedToDo.deadline = newDeadline
+  
+  response.send(editedToDo).status(200)
+
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   // PATCH todos
+  const { user } = request,
+    { id } = request.params  
+
+  const toDo = user.todos.find(toDo => toDo.id === id )
+
+  toDo.done = true
+
+  response.send(toDo).status(200)
+
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
