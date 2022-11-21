@@ -52,7 +52,23 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  // POST todos
+   //POST todos
+  const { title, deadline } = request.body
+
+  const user = request.user
+
+  const newTodo = {
+    id: uuidv4(),
+    title: title,
+    done: false,
+    deadline: new Date(deadline),
+    created_at: new Date()
+  }
+
+  user.todos.push(newTodo)
+
+  response.send(newTodo).status(200)
+  
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
