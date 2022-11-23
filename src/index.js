@@ -19,6 +19,8 @@ function checksExistsUserAccount(request, response, next) {
   //checkExistsUserAccount
   const { username } = request.headers
 
+  if (username == undefined || null) return response.status(404).send('Sorry, username not found! :(')
+
   const user = users.find(user => user.username.toLowerCase() === username.toLowerCase())
   
   if (user == undefined) return response.status(404).send('Sorry, user not found! :(')
@@ -104,6 +106,15 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   // DELETE todos
+  const { user } = request,
+  { id } = request.params
+
+  const indexOftoDo = user.todos.findIndex(toDo => toDo.id === id)
+
+  user.todos.splice(indexOftoDo, 1)
+  
+  response.send(`To Do deleted sucessfully`).status(200)
+
 });
 
 module.exports = app;
