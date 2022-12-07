@@ -19,11 +19,11 @@ function checksExistsUserAccount(request, response, next) {
   //checkExistsUserAccount
   const { username } = request.headers
 
-  if (username == undefined || null) return response.status(404).send('Sorry, username not found! :(')
+  if (username == undefined || null) return response.status(404).json({ error : 'Sorry, username not found! :(' })
 
   const user = users.find(user => user.username.toLowerCase() === username.toLowerCase())
   
-  if (user == undefined) return response.status(404).send('Sorry, user not found! :(')
+  if (user == undefined) return response.status(404).json({ error: 'Sorry, user not found! :(' })
 
   request.user = user
   
@@ -34,6 +34,10 @@ app.post('/users', (request, response) => {
   const { name, username } = request.body
   const id = uuidv4()
 
+  const usernameAlreadyExists = users.find(user => user.username.toLowerCase() === username.toLowerCase())
+
+  if (usernameAlreadyExists != undefined) return response.status(400).json({ error : 'Sorry, username already exists :(' })
+
   const newUser = {
     id: id,
     name: name,
@@ -43,7 +47,7 @@ app.post('/users', (request, response) => {
 
   users.push(newUser)
 
-  response.send(newUser).status(200)
+  response.send(newUser).status(201)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
