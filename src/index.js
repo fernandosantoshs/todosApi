@@ -102,6 +102,8 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const toDo = user.todos.find(toDo => toDo.id === id )
 
+  if (toDo == undefined) return response.status(404).json({error : 'Sorry, To Do not found :('})
+
   toDo.done = true
 
   response.send(toDo).status(200)
@@ -114,6 +116,8 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   { id } = request.params
 
   const indexOftoDo = user.todos.findIndex(toDo => toDo.id === id)
+
+  if (indexOftoDo == -1) return response.status(404).json({error : 'Sorry, To Do not found :('})
 
   user.todos.splice(indexOftoDo, 1)
   
