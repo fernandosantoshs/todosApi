@@ -31,7 +31,7 @@ app.post('/users', (request, response) => {
 
   const usernameAlreadyExists = users.find(user => user.username.toLowerCase() === username.toLowerCase())
 
-  if (usernameAlreadyExists != undefined) return response.status(400).json({ error : 'Sorry, username already exists :(' })
+  if (usernameAlreadyExists) return response.status(400).json({ error : 'Sorry, username already exists :(' })
 
   const newUser = {
     id: id,
@@ -42,21 +42,21 @@ app.post('/users', (request, response) => {
 
   users.push(newUser)
 
-  response.send(newUser).status(201)
+  response.status(201).send(newUser)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   // GET todos
   const { user } = request
   
-  response.send(user.todos).status(200)
+  response.status(200).send(user.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
    //POST todos
   const { title, deadline } = request.body
 
-  const user = request.user
+  const {user} = request
 
   const newTodo = {
     id: uuidv4(),
@@ -68,7 +68,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
   user.todos.push(newTodo)
 
-  response.send(newTodo).status(200)
+  response.status(201).send(newTodo)
   
 });
 
@@ -81,12 +81,14 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   
   const editedToDo = user.todos.find(toDo => toDo.id === id)
 
-  if (editedToDo == undefined) return response.send('Sorry! To Do not found :(').status(404)
+  if (!editedToDo) { 
+    return response.status(404).json({error : 'Sorry, To Do not found :('}) 
+  }
   
   editedToDo.title = newTitle
   editedToDo.deadline = newDeadline
   
-  response.send(editedToDo).status(200)
+  response.status(200).send(editedToDo)
 
 });
 
@@ -97,7 +99,9 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const toDo = user.todos.find(toDo => toDo.id === id )
 
-  if (toDo == undefined) return response.status(404).json({error : 'Sorry, To Do not found :('})
+  if (!toDo) {
+    return response.status(404).json({error : 'Sorry, To Do not found :('})
+  }
 
   toDo.done = true
 
@@ -116,7 +120,7 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   user.todos.splice(indexOftoDo, 1)
   
-  response.send(`To Do deleted sucessfully`).status(200)
+  response.status(204).send(`To Do deleted sucessfully`)
 
 });
 
