@@ -14,11 +14,15 @@ function checksExistsUserAccount(request, response, next) {
   //checkExistsUserAccount
   const { username } = request.headers
 
-  if (username == undefined || null) return response.status(404).json({ error : 'Sorry, username not found! :(' })
+  if (!username) {
+    return response.status(404).json({ error : 'Sorry, username not found! :(' })
+  }
 
   const user = users.find(user => user.username.toLowerCase() === username.toLowerCase())
   
-  if (user == undefined) return response.status(404).json({ error: 'Sorry, user not found! :(' })
+  if (!user) {
+    return response.status(404).json({ error: 'Sorry, user not found! :(' })
+  }
 
   request.user = user
   
@@ -31,7 +35,9 @@ app.post('/users', (request, response) => {
 
   const usernameAlreadyExists = users.find(user => user.username.toLowerCase() === username.toLowerCase())
 
-  if (usernameAlreadyExists) return response.status(400).json({ error : 'Sorry, username already exists :(' })
+  if (usernameAlreadyExists) {
+    return response.status(400).json({ error : 'Sorry, username already exists :(' })
+  }
 
   const newUser = {
     id: id,
@@ -116,7 +122,9 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   const indexOftoDo = user.todos.findIndex(toDo => toDo.id === id)
 
-  if (indexOftoDo == -1) return response.status(404).json({error : 'Sorry, To Do not found :('})
+  if (indexOftoDo == -1) {
+    return response.status(404).json({error : 'Sorry, To Do not found :('})
+  }
 
   user.todos.splice(indexOftoDo, 1)
   
